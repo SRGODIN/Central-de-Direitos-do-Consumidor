@@ -134,6 +134,16 @@
     window.gerarModelo = function() {
       originalGerarModelo();
       mostrarBotoesAcao();
+      
+      // Adicionar botão de ouvir após gerar o modelo
+      const modeloGerado = document.getElementById('modeloGerado');
+      const botaoOuvir = document.createElement('button');
+      botaoOuvir.innerHTML = '🔊 Ouvir';
+      botaoOuvir.className = 'btn-audio';
+      botaoOuvir.onclick = function() { lerTexto('modeloGerado'); };
+      
+      // Adicionar o botão na div de ações
+      document.querySelector('.actions-container').appendChild(botaoOuvir);
     };
     
     // Função para mostrar ajuda de emergência
@@ -207,6 +217,14 @@
       
       resultadoDiv.innerHTML = mensagem;
       resultadoDiv.style.display = 'block';
+      
+      // Adicionar botão de ouvir após exibir o resultado
+      const botaoOuvir = document.createElement('button');
+      botaoOuvir.innerHTML = '🔊 Ouvir';
+      botaoOuvir.className = 'btn-audio';
+      botaoOuvir.onclick = function() { lerTexto('resultadoAjuda'); };
+      resultadoDiv.appendChild(botaoOuvir);
+      
       resultadoDiv.scrollIntoView({ behavior: 'smooth' });
     }
     
@@ -353,6 +371,31 @@
         document.body.classList.add('loaded');
       }, 300);
     });
+    
+    // Função para ler texto em voz alta
+    function lerTexto(id) { 
+      const texto = document.getElementById(id).innerText; 
+      const utter = new SpeechSynthesisUtterance(texto); 
+      utter.lang = "pt-BR"; 
+      
+      // Parar qualquer síntese de voz em andamento
+      speechSynthesis.cancel();
+      
+      // Iniciar nova síntese
+      speechSynthesis.speak(utter);
+      
+      // Feedback visual
+      const botao = event.currentTarget;
+      const textoOriginal = botao.innerHTML;
+      botao.innerHTML = '🔈 Falando...';
+      botao.disabled = true;
+      
+      // Restaurar botão quando terminar de falar
+      utter.onend = function() {
+        botao.innerHTML = textoOriginal;
+        botao.disabled = false;
+      };
+    }
   </script>
 </body>
 </html>
