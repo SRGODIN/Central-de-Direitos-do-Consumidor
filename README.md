@@ -43,4 +43,4 @@ Este projeto é um esforço de empatia e cidadania digital, feito para ajudar qu
 
 1. Clone ou baixe este repositório:
    ```bash
-   git clone https://github.com/seu-usuario/ajuda-cidada.git
+   git clone https://github.com/SRGODIN/Central-de-Direitos-do-Consumidor.git
