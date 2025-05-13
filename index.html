@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#28a745" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="Central de informações sobre direitos do consumidor e assistência jurídica" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <title>Central de Direitos do Consumidor</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-balance-scale"></i> Central de Direitos do Consumidor</h1>
+      <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="busca" placeholder="Digite uma dúvida..." autocomplete="off" />
+      </div>
+    </header>
+
+    <!-- Menu de navegação rápida para mobile -->
+    <nav class="mobile-nav">
+      <a href="#conteudo" class="nav-item active"><i class="fas fa-search"></i><span>Buscar</span></a>
+      <a href="#emergencia" class="nav-item"><i class="fas fa-exclamation-triangle"></i><span>Emergência</span></a>
+      <a href="#servicos" class="nav-item"><i class="fas fa-map-marker-alt"></i><span>Serviços</span></a>
+      <a href="#modelos" class="nav-item"><i class="fas fa-file-alt"></i><span>Modelos</span></a>
+    </nav>
+
+    <main id="conteudo">
+      <!-- Respostas aparecem aqui -->
+      <div class="intro-message">
+        <i class="fas fa-info-circle"></i>
+        <p>Digite uma dúvida acima para encontrar informações sobre seus direitos como consumidor.</p>
+      </div>
+    </main>
+
+    <section id="emergencia" class="emergencia-section"> 
+      <h2><i class="fas fa-exclamation-triangle"></i> Estou em apuros</h2> 
+      <select id="apoioEmergencia" class="select-styled"> 
+        <option value="">Selecione uma situação</option> 
+        <option value="demissao">Fui demitido sem receber meus direitos</option> 
+        <option value="ameaca">Estou sendo ameaçado</option> 
+        <option value="luzCortada">Minha luz foi cortada</option> 
+        <option value="violencia">Sofro violência doméstica</option> 
+        <option value="semRenda">Estou sem renda e preciso de ajuda</option> 
+      </select> 
+      <button onclick="mostrarAjuda()" class="btn-primary"><i class="fas fa-hands-helping"></i> Ver orientação</button> 
+      <div id="resultadoAjuda" class="resultado-card"></div> 
+    </section>
+
+    <section id="servicos" class="servicos-section"> 
+      <h2><i class="fas fa-map-marker-alt"></i> Encontre ajuda perto de você</h2> 
+      <div class="form-group">
+        <input type="text" id="cepBusca" placeholder="Digite seu CEP" maxlength="9" class="input-styled"> 
+        <button onclick="buscarServicos()" class="btn-secondary"><i class="fas fa-search"></i> Buscar</button>
+      </div>
+      <div id="resultadoServicos" class="resultado-container">
+        <ul id="listaServicos" class="lista-servicos"></ul>
+      </div>
+    </section>
+
+    <footer id="modelos"> 
+      <h2><i class="fas fa-file-alt"></i> Gerar Modelo de Reclamação</h2>
+      <div class="form-group">
+        <label for="tipoReclamacao">Selecione o tipo de reclamação:</label> 
+        <select id="tipoReclamacao" class="select-styled"> 
+          <option value="defeito">Produto com defeito</option> 
+          <option value="atrasoEntrega">Atraso na entrega</option> 
+          <option value="reembolso">Reembolso por arrependimento</option> 
+          <option value="cobrancaIndevida">Cobrança indevida</option> 
+          <option value="cancelamentoServico">Cobrança após cancelamento</option> 
+          <option value="vendaCasada">Venda casada</option> 
+        </select> 
+      </div>
+      <button onclick="gerarModelo()" class="btn-primary"><i class="fas fa-file-download"></i> Gerar modelo</button> 
+      
+      <div class="actions-container">
+        <button id="copyButton" onclick="copiarModelo()" class="btn-action"><i class="fas fa-copy"></i> Copiar</button>
+        <button id="shareButton" onclick="compartilharModelo()" class="btn-action"><i class="fas fa-share-alt"></i> Compartilhar</button>
+      </div>
+   
+      <div id="modeloGerado" class="modelo-card"></div> 
+    </footer>
+  </div>
+
+  <script src="dados.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Função para mostrar botões de ação quando um modelo for gerado
+    function mostrarBotoesAcao() {
+      document.getElementById('copyButton').style.display = 'inline-block';
+      document.getElementById('shareButton').style.display = 'inline-block';
+    }
+    
+    // Função para copiar o modelo para a área de transferência
+    function copiarModelo() {
+      const texto = document.getElementById('modeloGerado').innerText;
+      navigator.clipboard.writeText(texto)
+        .then(() => {
+          alert('Modelo copiado para a área de transferência!');
+        })
+        .catch(err => {
+          console.error('Erro ao copiar texto: ', err);
+        });
+    }
+    
+    // Função para compartilhar o modelo (Web Share API)
+    function compartilharModelo() {
+      const texto = document.getElementById('modeloGerado').innerText;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: 'Modelo de Reclamação',
+          text: texto
+        })
+        .catch(err => {
+          console.error('Erro ao compartilhar: ', err);
+        });
+      } else {
+        alert('Seu navegador não suporta compartilhamento. Copie o texto manualmente.');
+      }
+    }
+    
+    // Modificar a função gerarModelo para mostrar os botões de ação
+    const originalGerarModelo = window.gerarModelo;
+    window.gerarModelo = function() {
+      originalGerarModelo();
+      mostrarBotoesAcao();
+    };
+    
+    // Função para mostrar ajuda de emergência
+    function mostrarAjuda() {
+      const situacao = document.getElementById('apoioEmergencia').value;
+      const resultadoDiv = document.getElementById('resultadoAjuda');
+      
+      if (!situacao) {
+        resultadoDiv.innerHTML = '<p><strong>Por favor, selecione uma situação para receber orientação.</strong></p>';
+        resultadoDiv.style.display = 'block';
+        return;
+      }
+      
+      let mensagem = '';
+      
+      switch(situacao) {
+        case 'demissao':
+          mensagem = `<h3>Demissão sem direitos</h3>
+          <p>Se você foi demitido sem receber seus direitos trabalhistas, procure imediatamente:</p>
+          <ul>
+            <li>O sindicato da sua categoria</li>
+            <li>A Defensoria Pública do Trabalho</li>
+            <li>O Ministério Público do Trabalho (MPT)</li>
+          </ul>
+          <p>Ligue para o Disque 100 ou 158 (Ministério do Trabalho) para denunciar e obter orientações.</p>`;
+          break;
+        case 'ameaca':
+          mensagem = `<h3>Ameaças</h3>
+          <p>Se você está sendo ameaçado:</p>
+          <ul>
+            <li>Ligue para a Polícia Militar: <strong>190</strong></li>
+            <li>Registre um Boletim de Ocorrência na delegacia mais próxima</li>
+            <li>Em caso de ameaça online, procure a Delegacia de Crimes Cibernéticos</li>
+          </ul>
+          <p>Guarde provas como mensagens, e-mails ou gravações.</p>`;
+          break;
+        case 'luzCortada':
+          mensagem = `<h3>Corte de energia elétrica</h3>
+          <p>Se sua luz foi cortada:</p>
+          <ul>
+            <li>Verifique se houve aviso prévio (obrigatório)</li>
+            <li>Procure a agência da concessionária de energia</li>
+            <li>Registre reclamação na ANEEL: 167 ou site da agência</li>
+            <li>Procure o PROCON local</li>
+          </ul>
+          <p>O corte é proibido às sextas, sábados, domingos, feriados e vésperas de feriado.</p>`;
+          break;
+        case 'violencia':
+          mensagem = `<h3>Violência doméstica</h3>
+          <p>Se você sofre violência doméstica, busque ajuda imediatamente:</p>
+          <ul>
+            <li>Ligue para a Central de Atendimento à Mulher: <strong>180</strong></li>
+            <li>Polícia Militar: <strong>190</strong></li>
+            <li>Procure a Delegacia da Mulher mais próxima</li>
+            <li>Centro de Referência de Assistência Social (CRAS)</li>
+          </ul>
+          <p>Você tem direito a medidas protetivas e acolhimento.</p>`;
+          break;
+        case 'semRenda':
+          mensagem = `<h3>Situação de vulnerabilidade econômica</h3>
+          <p>Se você está sem renda e precisa de ajuda:</p>
+          <ul>
+            <li>Procure o Centro de Referência de Assistência Social (CRAS) do seu município</li>
+            <li>Verifique se você tem direito a benefícios como Bolsa Família</li>
+            <li>Busque informações sobre programas de auxílio emergencial</li>
+            <li>Procure a Defensoria Pública para orientação sobre direitos sociais</li>
+          </ul>
+          <p>Ligue para o número 121 (Ministério da Cidadania) para informações sobre programas sociais.</p>`;
+          break;
+      }
+      
+      resultadoDiv.innerHTML = mensagem;
+      resultadoDiv.style.display = 'block';
+      resultadoDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Função para buscar serviços públicos por CEP
+    function buscarServicos() {
+      const cep = document.getElementById('cepBusca').value.replace(/\D/g, '');
+      const resultadoDiv = document.getElementById('resultadoServicos');
+      const listaServicos = document.getElementById('listaServicos');
+      
+      if (cep.length !== 8) {
+        alert('Por favor, digite um CEP válido');
+        return;
+      }
+      
+      // Simulação de serviços próximos (em uma aplicação real, isso viria de uma API)
+      const servicos = {
+        'defensoria': {
+          nome: 'Defensoria Pública',
+          descricao: 'Assistência jurídica gratuita para pessoas de baixa renda',
+          icone: 'fas fa-balance-scale'
+        },
+        'procon': {
+          nome: 'PROCON',
+          descricao: 'Órgão de proteção e defesa do consumidor',
+          icone: 'fas fa-shopping-cart'
+        },
+        'cras': {
+          nome: 'CRAS',
+          descricao: 'Centro de Referência de Assistência Social',
+          icone: 'fas fa-hands-helping'
+        },
+        'delegacia': {
+          nome: 'Delegacia',
+          descricao: 'Para registrar ocorrências e denúncias',
+          icone: 'fas fa-shield-alt'
+        },
+        'conselho-tutelar': {
+          nome: 'Conselho Tutelar',
+          descricao: 'Proteção dos direitos de crianças e adolescentes',
+          icone: 'fas fa-child'
+        }
+      };
+      
+      // Limpar lista anterior
+      listaServicos.innerHTML = '';
+      
+      // Adicionar serviços à lista
+      Object.keys(servicos).forEach(key => {
+        const servico = servicos[key];
+        const endereco = `${servico.nome}, CEP ${cep.replace(/(\d{5})(\d{3})/, '$1-$2')}, Brasil`;
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
+        
+        const item = document.createElement('li');
+        item.innerHTML = `
+          <div class="servico-item">
+            <div class="servico-icone"><i class="${servico.icone}"></i></div>
+            <div class="servico-info">
+              <h3>${servico.nome}</h3>
+              <p>${servico.descricao}</p>
+              <p class="servico-endereco">Endereço próximo ao CEP ${cep.replace(/(\d{5})(\d{3})/, '$1-$2')}</p>
+              <a href="${mapsUrl}" class="servico-link" target="_blank"><i class="fas fa-map-marker-alt"></i> Ver no mapa</a>
+            </div>
+          </div>
+        `;
+        listaServicos.appendChild(item);
+      });
+      
+      // Mostrar resultados
+      resultadoDiv.style.display = 'block';
+      resultadoDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Formatar CEP enquanto digita
+    document.getElementById('cepBusca').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 5) {
+        value = value.replace(/^(\d{5})(\d{0,3}).*/, '$1-$2');
+      }
+      e.target.value = value;
+    });
+    
+    // Função para navegação mobile
+    document.querySelectorAll('.mobile-nav a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        // Remover classe active de todos os links
+        document.querySelectorAll('.mobile-nav a').forEach(item => {
+          item.classList.remove('active');
+        });
+        
+        // Adicionar classe active ao link clicado
+        this.classList.add('active');
+        
+        // Scroll suave para a seção
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          e.preventDefault();
+          window.scrollTo({
+            top: targetElement.offsetTop - 60,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+    
+    // Detectar scroll para atualizar navegação ativa
+    window.addEventListener('scroll', function() {
+      const scrollPosition = window.scrollY;
+      
+      // Obter posições das seções
+      const sections = [
+        document.getElementById('conteudo'),
+        document.getElementById('emergencia'),
+        document.getElementById('servicos'),
+        document.getElementById('modelos')
+      ];
+      
+      // Encontrar a seção visível atual
+      let currentSection = sections[0];
+      sections.forEach(section => {
+        if (section && scrollPosition >= section.offsetTop - 100) {
+          currentSection = section;
+        }
+      });
+      
+      // Atualizar navegação ativa
+      document.querySelectorAll('.mobile-nav a').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === `#${currentSection.id}`) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    });
+    
+    // Inicializar botões de ação como escondidos
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('copyButton').style.display = 'none';
+      document.getElementById('shareButton').style.display = 'none';
+      
+      // Adicionar classe para animação de entrada
+      setTimeout(() => {
+        document.body.classList.add('loaded');
+      }, 300);
+    });
+  </script>
+</body>
+</html>
